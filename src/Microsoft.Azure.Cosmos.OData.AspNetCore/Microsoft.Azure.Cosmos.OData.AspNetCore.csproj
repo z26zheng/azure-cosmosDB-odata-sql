@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <RootNamespace>Microsoft.Azure.Cosmos.OData.AspNetCore</RootNamespace>
     <AssemblyName>Microsoft.Azure.Cosmos.OData.AspNetCore</AssemblyName>
-    <PackageId>Microsoft.Azure.Cosmos.OData.AspNetCore</PackageId>
+    <PackageId>CosmosDB.OData.Sql.AspNetCore</PackageId>
     <Description>
       ASP.NET Core adapter for Microsoft.Azure.Cosmos.OData.
       Provides extension methods on ODataQueryOptions and DI integration
