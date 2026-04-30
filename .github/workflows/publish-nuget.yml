@@ -106,6 +106,7 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
+          make_latest: true
           body: |
             ## Microsoft.Azure.Cosmos.OData ${{ steps.version.outputs.version }}
 
