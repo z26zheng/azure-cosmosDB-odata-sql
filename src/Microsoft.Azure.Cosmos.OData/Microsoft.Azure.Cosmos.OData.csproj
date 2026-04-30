@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <RootNamespace>Microsoft.Azure.Cosmos.OData</RootNamespace>
     <AssemblyName>Microsoft.Azure.Cosmos.OData</AssemblyName>
-    <PackageId>Microsoft.Azure.Documents.OData.Sql</PackageId>
+    <PackageId>CosmosDB.OData.Sql</PackageId>
     <Description>
       Translates OData V4 queries (parsed via Microsoft.OData.Core) into Azure Cosmos DB SQL.
       Framework-agnostic engine: no ASP.NET / no Cosmos SDK dependency. Accepts FilterClause,

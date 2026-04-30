@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <RootNamespace>Microsoft.Azure.Cosmos.OData.Cosmos</RootNamespace>
     <AssemblyName>Microsoft.Azure.Cosmos.OData.Cosmos</AssemblyName>
-    <PackageId>Microsoft.Azure.Documents.OData.Sql.Cosmos</PackageId>
+    <PackageId>CosmosDB.OData.Sql.Cosmos</PackageId>
     <Description>
       Bridge package connecting Microsoft.Azure.Cosmos.OData with the
       Microsoft.Azure.Cosmos SDK. Converts TranslatedQuery into
