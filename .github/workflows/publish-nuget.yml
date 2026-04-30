@@ -1,0 +1,126 @@
+name: Publish NuGet
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g. 3.0.0, 3.0.0-alpha.1)'
+        required: true
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  publish:
+    name: Build, Test & Publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            # Extract version from tag (strip 'v' prefix)
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Publishing version: $VERSION"
+
+          # Split into prefix and suffix
+          if [[ "$VERSION" == *-* ]]; then
+            echo "version_prefix=${VERSION%%-*}" >> $GITHUB_OUTPUT
+            echo "version_suffix=${VERSION#*-}" >> $GITHUB_OUTPUT
+          else
+            echo "version_prefix=$VERSION" >> $GITHUB_OUTPUT
+            echo "version_suffix=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: |
+          dotnet build --configuration Release --no-restore \
+            -p:VersionPrefix=${{ steps.version.outputs.version_prefix }} \
+            -p:VersionSuffix=${{ steps.version.outputs.version_suffix }}
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build --logger "trx" --results-directory ./TestResults
+
+      - name: Pack
+        run: |
+          dotnet pack --configuration Release --no-build --output ./artifacts \
+            -p:VersionPrefix=${{ steps.version.outputs.version_prefix }} \
+            -p:VersionSuffix=${{ steps.version.outputs.version_suffix }}
+
+      - name: List packages
+        run: ls -la ./artifacts/
+
+      - name: Push to NuGet.org
+        if: env.NUGET_API_KEY != ''
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          for package in ./artifacts/*.nupkg; do
+            echo "Pushing $package..."
+            dotnet nuget push "$package" \
+              --api-key "$NUGET_API_KEY" \
+              --source https://api.nuget.org/v3/index.json \
+              --skip-duplicate
+          done
+
+      - name: Upload packages as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages-${{ steps.version.outputs.version }}
+          path: |
+            ./artifacts/*.nupkg
+            ./artifacts/*.snupkg
+          retention-days: 90
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body: |
+            ## Microsoft.Azure.Cosmos.OData ${{ steps.version.outputs.version }}
+
+            ### NuGet Packages
+            - [`Microsoft.Azure.Cosmos.OData`](https://www.nuget.org/packages/Microsoft.Azure.Cosmos.OData/${{ steps.version.outputs.version }})
+            - [`Microsoft.Azure.Cosmos.OData.AspNetCore`](https://www.nuget.org/packages/Microsoft.Azure.Cosmos.OData.AspNetCore/${{ steps.version.outputs.version }})
+            - [`Microsoft.Azure.Cosmos.OData.Cosmos`](https://www.nuget.org/packages/Microsoft.Azure.Cosmos.OData.Cosmos/${{ steps.version.outputs.version }})
+
+            ### Install
+            ```
+            dotnet add package Microsoft.Azure.Cosmos.OData --version ${{ steps.version.outputs.version }}
+            dotnet add package Microsoft.Azure.Cosmos.OData.AspNetCore --version ${{ steps.version.outputs.version }}
+            dotnet add package Microsoft.Azure.Cosmos.OData.Cosmos --version ${{ steps.version.outputs.version }}
+            ```
+
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/CHANGELOG.md) for details.
+          files: |
+            ./artifacts/*.nupkg
+            ./artifacts/*.snupkg
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+          generate_release_notes: true

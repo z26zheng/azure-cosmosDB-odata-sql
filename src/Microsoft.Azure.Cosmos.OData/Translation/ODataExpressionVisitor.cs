@@ -85,13 +85,13 @@ namespace Microsoft.Azure.Cosmos.OData.Translation
             => new SqlMember(node.Name);
 
         public override SqlExpression Visit(SingleResourceCastNode node)
-            => MemberAccess(node.Source, node.StructuredTypeReference.Definition.ToString());
+            => MemberAccess(node.Source, node.StructuredTypeReference.Definition.ToString() ?? string.Empty);
 
         public override SqlExpression Visit(SingleValueCastNode node)
-            => MemberAccess(node.Source, node.TypeReference.Definition.ToString());
+            => MemberAccess(node.Source, node.TypeReference.Definition.ToString() ?? string.Empty);
 
         public override SqlExpression Visit(CollectionResourceCastNode node)
-            => MemberAccess(node.Source, node.ItemStructuredType.Definition.ToString());
+            => MemberAccess(node.Source, node.ItemStructuredType.Definition.ToString() ?? string.Empty);
 
         public override SqlExpression Visit(AggregatedCollectionPropertyNode node)
             => MemberAccess(node.Source, node.Property.Name);
