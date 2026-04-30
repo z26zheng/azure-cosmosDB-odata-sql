@@ -24,6 +24,9 @@ namespace Microsoft.Azure.Cosmos.OData
         /// <summary>The parsed <c>$apply</c> clause, if any.</summary>
         public ApplyClause? Apply { get; init; }
 
+        /// <summary>The parsed <c>$search</c> clause, if any.</summary>
+        public SearchClause? Search { get; init; }
+
         /// <summary>The numeric value of <c>$top</c>, if any.</summary>
         public long? Top { get; init; }
 

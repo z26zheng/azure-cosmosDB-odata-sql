@@ -96,7 +96,7 @@ namespace Microsoft.Azure.Cosmos.OData
             // ----- WHERE -----
             if ((options.Clauses & TranslationClauses.Filter) != 0)
             {
-                whereFragment = BuildWhere(clauses.Filter, options, renderer, visitor, parameters);
+                whereFragment = BuildWhere(clauses.Filter, clauses.Search, options, renderer, visitor, parameters);
             }
 
             // ----- SELECT (with optional TOP for legacy mode) -----
@@ -159,6 +159,7 @@ namespace Microsoft.Azure.Cosmos.OData
 
         private string? BuildWhere(
             FilterClause? filter,
+            SearchClause? search,
             TranslationOptions options,
             ISqlExpressionRenderer renderer,
             Translation.ODataExpressionVisitor visitor,
@@ -169,6 +170,27 @@ namespace Microsoft.Azure.Cosmos.OData
             {
                 var ast = visitor.Translate(filter.Expression);
                 filterSql = renderer.Render(ast, parameters);
+            }
+
+            // $search → FullTextContains(c, 'term')
+            if (search != null)
+            {
+                var searchAst = visitor.Translate(search.Expression);
+                // Wrap the search term in FullTextContains(c, 'term') if it's a bare literal
+                SqlExpression searchExpr;
+                if (searchAst is SqlLiteral)
+                {
+                    searchExpr = new Ast.SqlFunctionCall("FullTextContains",
+                        new Ast.SqlExpression[] { new Ast.SqlMember(options.DocumentAlias), searchAst });
+                }
+                else
+                {
+                    searchExpr = searchAst;
+                }
+                var searchSql = renderer.Render(searchExpr, parameters);
+                filterSql = string.IsNullOrEmpty(filterSql)
+                    ? searchSql
+                    : filterSql + " AND " + searchSql;
             }
 
             string? additional = options.AdditionalWhereClause;

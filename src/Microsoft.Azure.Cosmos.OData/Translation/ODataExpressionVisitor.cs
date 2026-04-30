@@ -93,6 +93,8 @@ namespace Microsoft.Azure.Cosmos.OData.Translation
         public override SqlExpression Visit(CollectionResourceCastNode node)
             => MemberAccess(node.Source, node.ItemStructuredType.Definition.ToString());
 
+        public override SqlExpression Visit(AggregatedCollectionPropertyNode node)
+            => MemberAccess(node.Source, node.Property.Name);
 
         // ----- Operators -----
 
@@ -265,6 +267,7 @@ namespace Microsoft.Azure.Cosmos.OData.Translation
                 case BinaryOperatorKind.Multiply:           return SqlBinaryOperator.Multiply;
                 case BinaryOperatorKind.Divide:             return SqlBinaryOperator.Divide;
                 case BinaryOperatorKind.Modulo:             return SqlBinaryOperator.Modulo;
+                case BinaryOperatorKind.Has:                return SqlBinaryOperator.And; // enum flag check: rendered as bitwise AND
                 default:
                     throw new UnsupportedODataFeatureException($"Binary operator '{k}' is not supported.");
             }

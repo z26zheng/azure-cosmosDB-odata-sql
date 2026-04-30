@@ -6,6 +6,10 @@ MinimumVisualStudioVersion = 10.0.40219.1
 
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.Cosmos.OData", "src\Microsoft.Azure.Cosmos.OData\Microsoft.Azure.Cosmos.OData.csproj", "{A1B2C3D4-1234-5678-9ABC-DEF012345678}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.Cosmos.OData.AspNetCore", "src\Microsoft.Azure.Cosmos.OData.AspNetCore\Microsoft.Azure.Cosmos.OData.AspNetCore.csproj", "{A2B3C4D5-2345-6789-ABCD-EF0123456780}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.Cosmos.OData.Cosmos", "src\Microsoft.Azure.Cosmos.OData.Cosmos\Microsoft.Azure.Cosmos.OData.Cosmos.csproj", "{A3B4C5D6-3456-789A-BCDE-F01234567890}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.Cosmos.OData.Tests", "tests\Microsoft.Azure.Cosmos.OData.Tests\Microsoft.Azure.Cosmos.OData.Tests.csproj", "{B2C3D4E5-2345-6789-ABCD-EF0123456789}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C0000001-0000-0000-0000-000000000001}"
@@ -15,6 +19,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C0000003-0000-0000-0000-000000000003}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		MIGRATION.md = MIGRATION.md
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
 		global.json = global.json
@@ -31,6 +36,14 @@ Global
 		{A1B2C3D4-1234-5678-9ABC-DEF012345678}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1B2C3D4-1234-5678-9ABC-DEF012345678}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B2C3D4-1234-5678-9ABC-DEF012345678}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2B3C4D5-2345-6789-ABCD-EF0123456780}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2B3C4D5-2345-6789-ABCD-EF0123456780}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2B3C4D5-2345-6789-ABCD-EF0123456780}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2B3C4D5-2345-6789-ABCD-EF0123456780}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3B4C5D6-3456-789A-BCDE-F01234567890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3B4C5D6-3456-789A-BCDE-F01234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3B4C5D6-3456-789A-BCDE-F01234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3B4C5D6-3456-789A-BCDE-F01234567890}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2C3D4E5-2345-6789-ABCD-EF0123456789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B2C3D4E5-2345-6789-ABCD-EF0123456789}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2C3D4E5-2345-6789-ABCD-EF0123456789}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -38,6 +51,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A1B2C3D4-1234-5678-9ABC-DEF012345678} = {C0000001-0000-0000-0000-000000000001}
+		{A2B3C4D5-2345-6789-ABCD-EF0123456780} = {C0000001-0000-0000-0000-000000000001}
+		{A3B4C5D6-3456-789A-BCDE-F01234567890} = {C0000001-0000-0000-0000-000000000001}
 		{B2C3D4E5-2345-6789-ABCD-EF0123456789} = {C0000002-0000-0000-0000-000000000002}
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution

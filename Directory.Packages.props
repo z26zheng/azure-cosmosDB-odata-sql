@@ -6,19 +6,22 @@
 
   <ItemGroup Label="OData">
     <!--
-      We pin OData 7.x because:
-        * Microsoft.AspNet.OData 7.x (Web API 2 / .NET Framework) only supports OData 7.x.
-        * Microsoft.AspNetCore.OData 8.x / 9.x also bring in OData 7.x.
-      Once the AspNet adapters move to ODL 8 we'll bump in lockstep.
+      We use OData 8.x across the board.
+      Microsoft.AspNetCore.OData 9.x requires OData 8.x.
+      OData 8.x is backward-compatible with 7.x at the QueryNode/Filter/OrderBy API level.
     -->
-    <PackageVersion Include="Microsoft.OData.Core" Version="7.21.0" />
-    <PackageVersion Include="Microsoft.OData.Edm" Version="7.21.0" />
-    <PackageVersion Include="Microsoft.Spatial" Version="7.21.0" />
+    <PackageVersion Include="Microsoft.OData.Core" Version="8.4.3" />
+    <PackageVersion Include="Microsoft.OData.Edm" Version="8.4.3" />
+    <PackageVersion Include="Microsoft.Spatial" Version="8.4.3" />
   </ItemGroup>
 
   <ItemGroup Label="ASP.NET adapters">
     <PackageVersion Include="Microsoft.AspNet.OData" Version="7.7.9" />
     <PackageVersion Include="Microsoft.AspNetCore.OData" Version="9.4.1" />
+  </ItemGroup>
+
+  <ItemGroup Label="OData Model Builder">
+    <PackageVersion Include="Microsoft.OData.ModelBuilder" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup Label="Cosmos">
@@ -33,10 +36,6 @@
 
   <ItemGroup Label="Build / SourceLink">
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Label="OData Model Builder">
-    <PackageVersion Include="Microsoft.OData.ModelBuilder" Version="1.0.9" />
   </ItemGroup>
 
   <ItemGroup Label="Test packages">

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <RootNamespace>Microsoft.Azure.Cosmos.OData.Cosmos</RootNamespace>
+    <AssemblyName>Microsoft.Azure.Cosmos.OData.Cosmos</AssemblyName>
+    <PackageId>Microsoft.Azure.Cosmos.OData.Cosmos</PackageId>
+    <Description>
+      Bridge package connecting Microsoft.Azure.Cosmos.OData with the
+      Microsoft.Azure.Cosmos SDK. Converts TranslatedQuery into
+      QueryDefinition with parameters.
+    </Description>
+    <IsPackable>true</IsPackable>
+    <AzureCosmosDisableNewtonsoftJsonCheck>true</AzureCosmosDisableNewtonsoftJsonCheck>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Azure.Cosmos.OData\Microsoft.Azure.Cosmos.OData.csproj" />
+  </ItemGroup>
+
+</Project>
