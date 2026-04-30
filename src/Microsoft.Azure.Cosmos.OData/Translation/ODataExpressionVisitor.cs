@@ -13,7 +13,7 @@ namespace Microsoft.Azure.Cosmos.OData.Translation
     /// <see cref="SqlExpression"/> tree.  This is the only piece that knows about OData internals;
     /// the rendering / function mapping / field naming pieces are pluggable.
     /// </summary>
-    internal sealed class ODataExpressionVisitor : QueryNodeVisitor<SqlExpression>
+    internal sealed class ODataExpressionVisitor : QueryNodeVisitor<SqlExpression>, IODataToSqlExpressionTranslator
     {
         private readonly IFieldNameResolver _fieldNames;
         private readonly ISqlFunctionMapper _functions;
@@ -23,6 +23,9 @@ namespace Microsoft.Azure.Cosmos.OData.Translation
             _fieldNames = fieldNames ?? throw new ArgumentNullException(nameof(fieldNames));
             _functions = functions ?? throw new ArgumentNullException(nameof(functions));
         }
+
+        /// <inheritdoc />
+        public SqlExpression TranslateExpression(QueryNode node) => Translate(node);
 
         /// <summary>Convenience: dispatch a node through the visitor.</summary>
         public SqlExpression Translate(QueryNode node)

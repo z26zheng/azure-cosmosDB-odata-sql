@@ -66,6 +66,14 @@ namespace Microsoft.Azure.Cosmos.OData
             new VectorSearchFunctionMapper(),
             new FullTextSearchFunctionMapper());
 
+        /// <summary>
+        /// Create an <see cref="IODataToSqlExpressionTranslator"/> that converts OData
+        /// <see cref="Microsoft.OData.UriParser.QueryNode"/> instances into <see cref="Ast.SqlExpression"/> trees.
+        /// Useful for custom AST manipulation or debugging.
+        /// </summary>
+        public IODataToSqlExpressionTranslator CreateExpressionTranslator()
+            => new Translation.ODataExpressionVisitor(_fieldNames, _functions);
+
         /// <summary>Translate the given OData clauses into Cosmos SQL using the default options.</summary>
         public TranslatedQuery Translate(ODataQueryClauses clauses)
             => Translate(clauses, TranslationOptions.Default);
