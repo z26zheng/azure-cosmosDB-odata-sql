@@ -75,10 +75,13 @@ jobs:
         run: ls -la ./artifacts/
 
       - name: Push to NuGet.org
-        if: env.NUGET_API_KEY != ''
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "::warning::NUGET_API_KEY secret not set — skipping NuGet push"
+            exit 0
+          fi
           for package in ./artifacts/*.nupkg; do
             echo "Pushing $package..."
             dotnet nuget push "$package" \
