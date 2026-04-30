@@ -250,3 +250,16 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# .NET Core / SDK-style
+*.received.*
+TestResults/
+artifacts/
+.vscode/
+.idea/
+
+# JetBrains
+*.iml
+
+# Cline
+.clinerules/

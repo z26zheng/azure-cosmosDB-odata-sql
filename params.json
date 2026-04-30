@@ -1,6 +1,0 @@
-{
-  "name": "OData to DocumentDB SQL Translator",
-  "tagline": "Converts OData URL queries into DocumentDB SQL statements",
-  "body": "\r\n# OData to DocumentDB SQL Translator\r\nThis library provides methods to convert OData queries into SQL statements in C#.\r\n---\r\n## Installation\r\nThe nuget package can be found at https://www.nuget.org/packages/Microsoft.Azure.Documents.OData.Sql\r\n\r\nTo install install this package in Visual Studio, run the following command in the Package Manager Console:\r\n    \r\n    Install-Package Microsoft.Azure.Documents.OData.Sql\r\n\r\n### Authors and Contributors\r\n\r\n### Support or Contact\r\n",
-  "note": "Don't delete this file! It's used internally to help with page regeneration."
-}

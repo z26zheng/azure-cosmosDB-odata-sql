@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
+    <RootNamespace>Microsoft.Azure.Cosmos.OData</RootNamespace>
+    <AssemblyName>Microsoft.Azure.Cosmos.OData</AssemblyName>
+    <PackageId>Microsoft.Azure.Cosmos.OData</PackageId>
+    <Description>
+      Translates OData V4 queries (parsed via Microsoft.OData.Core) into Azure Cosmos DB SQL.
+      Framework-agnostic engine: no ASP.NET / no Cosmos SDK dependency. Accepts FilterClause,
+      OrderByClause, SelectExpandClause and ApplyClause and returns a TranslatedQuery containing
+      the SQL string plus parameterized values.
+    </Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.OData.Core" />
+    <PackageReference Include="Microsoft.OData.Edm" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+</Project>
