@@ -112,5 +112,33 @@ namespace Microsoft.Azure.Cosmos.OData
         /// Parameters referenced by <see cref="AdditionalWhereClause"/>.
         /// </summary>
         public System.Collections.Generic.IReadOnlyDictionary<string, object?>? AdditionalParameters { get; init; }
+
+        // -------- Query complexity limits --------
+
+        /// <summary>
+        /// Maximum allowed nesting depth of filter expressions.
+        /// <c>0</c> (default) means unlimited. Set to e.g. <c>10</c> to prevent
+        /// denial-of-service via deeply nested OData queries.
+        /// </summary>
+        public int MaxFilterDepth { get; init; } = 0;
+
+        /// <summary>
+        /// Maximum number of properties in <c>$orderby</c>.
+        /// <c>0</c> (default) means unlimited.
+        /// </summary>
+        public int MaxOrderByProperties { get; init; } = 0;
+
+        /// <summary>
+        /// Maximum value allowed for <c>$top</c>. When set and the client requests
+        /// a higher value, the translator will cap it to this number.
+        /// <c>0</c> (default) means unlimited.
+        /// </summary>
+        public int MaxTop { get; init; } = 0;
+
+        /// <summary>
+        /// Maximum number of properties in <c>$select</c>.
+        /// <c>0</c> (default) means unlimited.
+        /// </summary>
+        public int MaxSelectProperties { get; init; } = 0;
     }
 }

@@ -76,6 +76,9 @@ namespace Microsoft.Azure.Cosmos.OData
             if (clauses == null) throw new ArgumentNullException(nameof(clauses));
             if (options == null) throw new ArgumentNullException(nameof(options));
 
+            // ----- Enforce query complexity limits -----
+            ValidateComplexityLimits(clauses, options);
+
             var renderer = _rendererFactory(options.Parameterization);
             var visitor = new Translation.ODataExpressionVisitor(_fieldNames, _functions);
             var parameters = new Dictionary<string, object?>();
@@ -429,6 +432,70 @@ namespace Microsoft.Azure.Cosmos.OData
             }
 
             return new TranslatedQuery(sb.ToString(), parameters);
+        }
+
+        // -------- query complexity validation --------
+
+        private static void ValidateComplexityLimits(ODataQueryClauses clauses, TranslationOptions options)
+        {
+            // MaxTop
+            if (options.MaxTop > 0 && clauses.Top.HasValue && clauses.Top.Value > options.MaxTop)
+            {
+                throw new ODataTranslationException(
+                    $"$top value {clauses.Top.Value} exceeds the maximum allowed value of {options.MaxTop}.");
+            }
+
+            // MaxOrderByProperties
+            if (options.MaxOrderByProperties > 0 && clauses.OrderBy != null)
+            {
+                int count = 0;
+                for (var ob = clauses.OrderBy; ob != null; ob = ob.ThenBy)
+                {
+                    count++;
+                    if (count > options.MaxOrderByProperties)
+                    {
+                        throw new ODataTranslationException(
+                            $"$orderby contains more than {options.MaxOrderByProperties} properties.");
+                    }
+                }
+            }
+
+            // MaxSelectProperties
+            if (options.MaxSelectProperties > 0 && clauses.Select != null && !clauses.Select.AllSelected)
+            {
+                int count = clauses.Select.SelectedItems.Count();
+                if (count > options.MaxSelectProperties)
+                {
+                    throw new ODataTranslationException(
+                        $"$select contains {count} properties, exceeding the maximum of {options.MaxSelectProperties}.");
+                }
+            }
+
+            // MaxFilterDepth
+            if (options.MaxFilterDepth > 0 && clauses.Filter != null)
+            {
+                int depth = MeasureNodeDepth(clauses.Filter.Expression);
+                if (depth > options.MaxFilterDepth)
+                {
+                    throw new ODataTranslationException(
+                        $"$filter expression depth ({depth}) exceeds the maximum allowed depth of {options.MaxFilterDepth}.");
+                }
+            }
+        }
+
+        private static int MeasureNodeDepth(QueryNode node)
+        {
+            switch (node)
+            {
+                case BinaryOperatorNode bin:
+                    return 1 + System.Math.Max(MeasureNodeDepth(bin.Left), MeasureNodeDepth(bin.Right));
+                case UnaryOperatorNode un:
+                    return 1 + MeasureNodeDepth(un.Operand);
+                case ConvertNode conv:
+                    return MeasureNodeDepth(conv.Source);
+                default:
+                    return 1;
+            }
         }
 
         private static string AggregateMethodToSql(AggregationMethod method)
