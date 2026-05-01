@@ -43,6 +43,8 @@ namespace Microsoft.Azure.Cosmos.OData.Tests
             var opts = new TranslationOptions
             {
                 MaxTop = 0, // unlimited
+                MaxSkipValue = 0, // unlimited
+                MaxFilterDepth = 0, // unlimited
                 Parameterization = ParameterizationMode.Inline,
             };
 
@@ -127,16 +129,62 @@ namespace Microsoft.Azure.Cosmos.OData.Tests
             result.Sql.Should().NotBeEmpty();
         }
 
-        [Fact]
-        public void DefaultLimits_AllZero_NoRestrictions()
-        {
-            // With defaults (all 0 = unlimited), even large queries pass
-            var clauses = ODataTestHelper.FromQuery(
-                "$select=EnglishName,IntField,Property,CompanyId&$filter=EnglishName eq 'a'&$orderby=EnglishName asc,IntField desc&$top=10000");
-            var opts = TranslationOptions.Default with { Parameterization = ParameterizationMode.Inline };
 
+        [Fact]
+        public void DefaultMaxTop_RejectsOver1000()
+        {
+            var clauses = ODataTestHelper.FromQuery("$top=1001");
+            var act = () => Translator.Translate(clauses, TranslationOptions.Default);
+            act.Should().Throw<ODataTranslationException>()
+                .WithMessage("*exceeds the maximum*1000*");
+        }
+
+        [Fact]
+        public void MaxSkipValue_Exceeded_Throws()
+        {
+            var clauses = ODataTestHelper.FromQuery("$skip=20000");
+            var act = () => Translator.Translate(clauses, TranslationOptions.Default);
+            act.Should().Throw<ODataTranslationException>()
+                .WithMessage("*$skip*exceeds*10000*");
+        }
+
+        [Fact]
+        public void RequireFilter_NoFilter_Throws()
+        {
+            var clauses = ODataTestHelper.FromQuery("");
+            var opts = new TranslationOptions { RequireFilter = true };
+            var act = () => Translator.Translate(clauses, opts);
+            act.Should().Throw<ODataTranslationException>()
+                .WithMessage("*$filter*required*");
+        }
+
+        [Fact]
+        public void RequireFilter_WithFilter_Succeeds()
+        {
+            var clauses = ODataTestHelper.FromQuery("$filter=IntField gt 5");
+            var opts = new TranslationOptions
+            {
+                RequireFilter = true,
+                Parameterization = ParameterizationMode.Inline,
+            };
             var result = Translator.Translate(clauses, opts);
             result.Sql.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public void ErrorCode_IsSet_OnComplexityViolation()
+        {
+            var clauses = ODataTestHelper.FromQuery("$top=2000");
+            try
+            {
+                Translator.Translate(clauses, TranslationOptions.Default);
+            }
+            catch (ODataTranslationException ex)
+            {
+                ex.ErrorCode.Should().Be(ODataTranslationErrorCode.ComplexityLimitExceeded);
+                return;
+            }
+            throw new System.Exception("Expected ODataTranslationException");
         }
     }
 }

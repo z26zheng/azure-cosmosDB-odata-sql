@@ -117,10 +117,9 @@ namespace Microsoft.Azure.Cosmos.OData
 
         /// <summary>
         /// Maximum allowed nesting depth of filter expressions.
-        /// <c>0</c> (default) means unlimited. Set to e.g. <c>10</c> to prevent
-        /// denial-of-service via deeply nested OData queries.
+        /// Default: <c>10</c>. Set to <c>0</c> for unlimited (not recommended for production).
         /// </summary>
-        public int MaxFilterDepth { get; init; } = 0;
+        public int MaxFilterDepth { get; init; } = 10;
 
         /// <summary>
         /// Maximum number of properties in <c>$orderby</c>.
@@ -129,17 +128,55 @@ namespace Microsoft.Azure.Cosmos.OData
         public int MaxOrderByProperties { get; init; } = 0;
 
         /// <summary>
-        /// Maximum value allowed for <c>$top</c>. When set and the client requests
-        /// a higher value, the translator will cap it to this number.
-        /// <c>0</c> (default) means unlimited.
+        /// Maximum value allowed for <c>$top</c>.
+        /// Default: <c>1000</c>. Set to <c>0</c> for unlimited (not recommended for production).
         /// </summary>
-        public int MaxTop { get; init; } = 0;
+        public int MaxTop { get; init; } = 1000;
 
         /// <summary>
         /// Maximum number of properties in <c>$select</c>.
         /// <c>0</c> (default) means unlimited.
         /// </summary>
         public int MaxSelectProperties { get; init; } = 0;
+
+        /// <summary>
+        /// Maximum value allowed for <c>$skip</c>.
+        /// Default: <c>10000</c>. Set to <c>0</c> for unlimited.
+        /// Prevents denial-of-service via <c>OFFSET 999999999</c>.
+        /// </summary>
+        public int MaxSkipValue { get; init; } = 10_000;
+
+        /// <summary>
+        /// Maximum number of aggregate expressions in <c>$apply</c>.
+        /// Default: <c>20</c>. Set to <c>0</c> for unlimited.
+        /// </summary>
+        public int MaxApplyAggregations { get; init; } = 20;
+
+        /// <summary>
+        /// Maximum length of the generated SQL string in characters.
+        /// Default: <c>65536</c> (64 KB). Set to <c>0</c> for unlimited.
+        /// </summary>
+        public int MaxGeneratedSqlLength { get; init; } = 65_536;
+
+        // -------- Security policies --------
+
+        /// <summary>
+        /// When <c>true</c>, translation throws if no <c>$filter</c> is provided.
+        /// Prevents accidental full container scans. Default: <c>false</c>.
+        /// </summary>
+        public bool RequireFilter { get; init; } = false;
+
+        /// <summary>
+        /// When non-null, only these field names (case-insensitive) may appear in queries.
+        /// Checked against OData property names before resolver transformation.
+        /// </summary>
+        public System.Collections.Generic.IReadOnlySet<string>? AllowedFields { get; init; }
+
+        /// <summary>
+        /// Field names (case-insensitive) that must never appear in queries
+        /// (e.g. <c>"_etag"</c>, <c>"_rid"</c>, <c>"_self"</c>).
+        /// </summary>
+        public System.Collections.Generic.IReadOnlySet<string>? DeniedFields { get; init; }
 
         // -------- Query modifiers --------
 

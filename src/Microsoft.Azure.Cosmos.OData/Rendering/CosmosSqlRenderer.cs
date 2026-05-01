@@ -178,22 +178,29 @@ namespace Microsoft.Azure.Cosmos.OData.Rendering
             switch (value)
             {
                 case string s:
-                    // If this is already a quoted string literal (e.g. produced verbatim by OData LiteralText),
-                    // pass it through; otherwise quote-escape it.
-                    if (s.Length >= 2 && s[0] == '\'' && s[s.Length - 1] == '\'') return s;
+                    // SEC-01 fix: always escape internal single quotes, even for already-quoted strings.
+                    if (s.Length >= 2 && s[0] == '\'' && s[s.Length - 1] == '\'')
+                    {
+                        // Strip outer quotes, escape inner content, re-quote
+                        var inner = s.Substring(1, s.Length - 2);
+                        return "'" + inner.Replace("'", "''") + "'";
+                    }
                     return "'" + s.Replace("'", "''") + "'";
                 case bool b:
                     return b ? "true" : "false";
+                case int or long or short or byte or double or float or decimal:
+                    return ((IFormattable)value).ToString(null, CultureInfo.InvariantCulture);
                 case DateTime dt:
                     return "'" + dt.ToString("o", CultureInfo.InvariantCulture) + "'";
                 case DateTimeOffset dto:
                     return "'" + dto.ToString("o", CultureInfo.InvariantCulture) + "'";
                 case Guid g:
                     return "'" + g.ToString("D") + "'";
-                case IFormattable f:
-                    return f.ToString(null, CultureInfo.InvariantCulture);
                 default:
-                    return Convert.ToString(value, CultureInfo.InvariantCulture) ?? "null";
+                    // SEC-02 fix: reject unknown types instead of blindly calling ToString()
+                    throw new InvalidODataExpressionException(
+                        $"Cannot inline literal of type '{value.GetType().Name}'. " +
+                        "Use ParameterizationMode.Parameters or add explicit handling for this type.");
             }
         }
 

@@ -163,7 +163,17 @@ namespace Microsoft.Azure.Cosmos.OData
                 sb.Append(paginationFragment);
             }
 
-            return new TranslatedQuery(sb.ToString().TrimEnd(), parameters, countSql);
+            var sql = sb.ToString().TrimEnd();
+
+            // SEC-09: Enforce SQL output length limit
+            if (options.MaxGeneratedSqlLength > 0 && sql.Length > options.MaxGeneratedSqlLength)
+            {
+                throw new ODataTranslationException(
+                    $"Generated SQL length ({sql.Length}) exceeds the maximum of {options.MaxGeneratedSqlLength} characters.",
+                    ODataTranslationErrorCode.ComplexityLimitExceeded);
+            }
+
+            return new TranslatedQuery(sql, parameters, countSql);
         }
 
         // -------- WHERE --------
@@ -453,11 +463,28 @@ namespace Microsoft.Azure.Cosmos.OData
 
         private static void ValidateComplexityLimits(ODataQueryClauses clauses, TranslationOptions options)
         {
+            // RequireFilter (SEC-09)
+            if (options.RequireFilter && clauses.Filter == null)
+            {
+                throw new ODataTranslationException(
+                    "A $filter clause is required but none was provided.",
+                    ODataTranslationErrorCode.FilterRequired);
+            }
+
             // MaxTop
             if (options.MaxTop > 0 && clauses.Top.HasValue && clauses.Top.Value > options.MaxTop)
             {
                 throw new ODataTranslationException(
-                    $"$top value {clauses.Top.Value} exceeds the maximum allowed value of {options.MaxTop}.");
+                    $"$top value {clauses.Top.Value} exceeds the maximum allowed value of {options.MaxTop}.",
+                    ODataTranslationErrorCode.ComplexityLimitExceeded);
+            }
+
+            // MaxSkipValue (SEC-07)
+            if (options.MaxSkipValue > 0 && clauses.Skip.HasValue && clauses.Skip.Value > options.MaxSkipValue)
+            {
+                throw new ODataTranslationException(
+                    $"$skip value {clauses.Skip.Value} exceeds the maximum allowed value of {options.MaxSkipValue}.",
+                    ODataTranslationErrorCode.ComplexityLimitExceeded);
             }
 
             // MaxOrderByProperties
@@ -470,7 +497,8 @@ namespace Microsoft.Azure.Cosmos.OData
                     if (count > options.MaxOrderByProperties)
                     {
                         throw new ODataTranslationException(
-                            $"$orderby contains more than {options.MaxOrderByProperties} properties.");
+                            $"$orderby contains more than {options.MaxOrderByProperties} properties.",
+                            ODataTranslationErrorCode.ComplexityLimitExceeded);
                     }
                 }
             }
@@ -482,7 +510,8 @@ namespace Microsoft.Azure.Cosmos.OData
                 if (count > options.MaxSelectProperties)
                 {
                     throw new ODataTranslationException(
-                        $"$select contains {count} properties, exceeding the maximum of {options.MaxSelectProperties}.");
+                        $"$select contains {count} properties, exceeding the maximum of {options.MaxSelectProperties}.",
+                        ODataTranslationErrorCode.ComplexityLimitExceeded);
                 }
             }
 
@@ -493,24 +522,50 @@ namespace Microsoft.Azure.Cosmos.OData
                 if (depth > options.MaxFilterDepth)
                 {
                     throw new ODataTranslationException(
-                        $"$filter expression depth ({depth}) exceeds the maximum allowed depth of {options.MaxFilterDepth}.");
+                        $"$filter expression depth ({depth}) exceeds the maximum allowed depth of {options.MaxFilterDepth}.",
+                        ODataTranslationErrorCode.ComplexityLimitExceeded);
                 }
             }
         }
 
+        /// <summary>
+        /// Iterative depth measurement with hard stack overflow protection (SEC-08).
+        /// </summary>
         private static int MeasureNodeDepth(QueryNode node)
         {
-            switch (node)
+            const int HardLimit = 200;
+            var stack = new Stack<(QueryNode Node, int Depth)>();
+            stack.Push((node, 1));
+            int maxDepth = 0;
+
+            while (stack.Count > 0)
             {
-                case BinaryOperatorNode bin:
-                    return 1 + System.Math.Max(MeasureNodeDepth(bin.Left), MeasureNodeDepth(bin.Right));
-                case UnaryOperatorNode un:
-                    return 1 + MeasureNodeDepth(un.Operand);
-                case ConvertNode conv:
-                    return MeasureNodeDepth(conv.Source);
-                default:
-                    return 1;
+                var (current, depth) = stack.Pop();
+                if (depth > HardLimit)
+                {
+                    throw new ODataTranslationException(
+                        $"$filter expression depth exceeds hard limit of {HardLimit}.",
+                        ODataTranslationErrorCode.ComplexityLimitExceeded);
+                }
+
+                if (depth > maxDepth) maxDepth = depth;
+
+                switch (current)
+                {
+                    case BinaryOperatorNode bin:
+                        stack.Push((bin.Left, depth + 1));
+                        stack.Push((bin.Right, depth + 1));
+                        break;
+                    case UnaryOperatorNode un:
+                        stack.Push((un.Operand, depth + 1));
+                        break;
+                    case ConvertNode conv:
+                        stack.Push((conv.Source, depth));
+                        break;
+                }
             }
+
+            return maxDepth;
         }
 
         private static string AggregateMethodToSql(AggregationMethod method)
