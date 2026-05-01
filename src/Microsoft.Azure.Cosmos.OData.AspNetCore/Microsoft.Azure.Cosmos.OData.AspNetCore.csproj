@@ -6,9 +6,9 @@
     <AssemblyName>Microsoft.Azure.Cosmos.OData.AspNetCore</AssemblyName>
     <PackageId>CosmosDB.OData.Sql.AspNetCore</PackageId>
     <Description>
-      ASP.NET Core adapter for Microsoft.Azure.Cosmos.OData.
-      Provides extension methods on ODataQueryOptions and DI integration
-      via AddODataToCosmosSql().
+      ASP.NET Core adapter for CosmosDB.OData.Sql. Supports .NET 8, .NET 9, and .NET 10.
+      Provides ODataQueryOptions.Translate() extension methods and AddODataToCosmosSql()
+      DI registration for seamless OData-to-Cosmos integration in ASP.NET Core apps.
     </Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

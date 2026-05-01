@@ -6,10 +6,10 @@
     <AssemblyName>Microsoft.Azure.Cosmos.OData</AssemblyName>
     <PackageId>CosmosDB.OData.Sql</PackageId>
     <Description>
-      Translates OData V4 queries (parsed via Microsoft.OData.Core) into Azure Cosmos DB SQL.
-      Framework-agnostic engine: no ASP.NET / no Cosmos SDK dependency. Accepts FilterClause,
-      OrderByClause, SelectExpandClause and ApplyClause and returns a TranslatedQuery containing
-      the SQL string plus parameterized values.
+      Translates OData V4 queries into Azure Cosmos DB SQL. Supports .NET 8, .NET 9, and .NET 10.
+      Framework-agnostic engine with 50+ Cosmos DB function mappings, parameterized queries,
+      OFFSET/LIMIT pagination, $apply/GROUP BY, vector search, full-text search, and geospatial.
+      No ASP.NET or Cosmos SDK dependency required.
     </Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
