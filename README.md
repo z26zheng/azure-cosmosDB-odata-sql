@@ -143,6 +143,8 @@ This makes the engine testable, extensible, and free of leaky abstractions.
 
 ### Built-in functions
 
+#### String functions
+
 | OData | Cosmos SQL |
 |---|---|
 | `contains(field,'value')` | `CONTAINS(c.field,'value')` |
@@ -156,11 +158,77 @@ This makes the engine testable, extensible, and free of leaky abstractions.
 | `trim(field)` | `LTRIM(RTRIM(c.field))` |
 | `concat(field,'value')` | `CONCAT(c.field,'value')` |
 | `matchesPattern(field,'^A')` | `RegexMatch(c.field,'^A')` |
+| `left(field,n)` | `LEFT(c.field,n)` |
+| `right(field,n)` | `RIGHT(c.field,n)` |
+| `replace(field,'old','new')` | `REPLACE(c.field,'old','new')` |
+| `reverse(field)` | `REVERSE(c.field)` |
+| `stringequals(field,'value')` | `StringEquals(c.field,'value')` |
+| `tostring(field)` | `ToString(c.field)` |
+
+#### Mathematical functions
+
+| OData | Cosmos SQL |
+|---|---|
 | `round(field)` / `floor` / `ceiling` | `ROUND` / `FLOOR` / `CEILING` |
+| `abs(field)` | `ABS(c.field)` |
+| `power(field,n)` | `POWER(c.field,n)` |
+| `sqrt(field)` | `SQRT(c.field)` |
+| `log(field)` / `log10(field)` | `LOG` / `LOG10` |
+| `exp(field)` | `EXP(c.field)` |
+| `sin` / `cos` / `tan` / `atn` / `atn2` | `SIN` / `COS` / `TAN` / `ATN` / `ATN2` |
+| `degrees(field)` / `radians(field)` | `DEGREES` / `RADIANS` |
+| `rand()` | `RAND()` |
+| `numberbin(field,size)` | `NumberBin(c.field,size)` |
+
+#### Date/Time functions
+
+| OData | Cosmos SQL |
+|---|---|
+| `year(field)` / `month` / `day` / `hour` / `minute` / `second` | `DateTimePart('yyyy',c.field)` etc. |
+| `datetimeadd(part,n,field)` | `DateTimeAdd(part,n,c.field)` |
+| `datetimediff(part,start,end)` | `DateTimeDiff(part,start,end)` |
+| `getcurrentdatetime()` | `GetCurrentDateTime()` |
+| `getcurrentticks()` | `GetCurrentTicks()` |
+| `datetimebin(field,part,size)` | `DateTimeBin(c.field,part,size)` |
+
+#### Type checking functions
+
+| OData | Cosmos SQL |
+|---|---|
+| `isdefined(field)` | `IS_DEFINED(c.field)` |
+| `isnull(field)` | `IS_NULL(c.field)` |
+| `isnumber(field)` / `isstring` / `isbool` / `isarray` / `isobject` | `IS_NUMBER` / `IS_STRING` / `IS_BOOL` / `IS_ARRAY` / `IS_OBJECT` |
+| `isinteger(field)` / `isprimitive` / `isfinitenumber` | `IS_INTEGER` / `IS_PRIMITIVE` / `IS_FINITE_NUMBER` |
+
+#### Array functions
+
+| OData | Cosmos SQL |
+|---|---|
+| `arraycontains(arr,val)` | `ARRAY_CONTAINS(c.arr,val)` |
+| `arraylength(arr)` | `ARRAY_LENGTH(c.arr)` |
+| `arrayslice(arr,start,len)` | `ARRAY_SLICE(c.arr,start,len)` |
+| `arrayconcat(arr1,arr2)` | `ARRAY_CONCAT(c.arr1,c.arr2)` |
+
+#### Geospatial functions
+
+| OData | Cosmos SQL |
+|---|---|
 | `geo.distance(loc,point)` | `ST_DISTANCE(c.loc,point)` |
 | `geo.intersects(loc,polygon)` | `ST_INTERSECTS(c.loc,polygon)` |
+| `geo.within(loc,polygon)` | `ST_WITHIN(c.loc,polygon)` |
+| `geo.isvalid(loc)` | `ST_ISVALID(c.loc)` |
+| `geo.area(polygon)` | `ST_AREA(c.polygon)` |
+
+#### Vector & Full-text search
+
+| OData | Cosmos SQL |
+|---|---|
 | `vectordistance(embedding,query)` | `VectorDistance(c.embedding,query)` |
 | `fulltextcontains(field,'term')` | `FullTextContains(c.field,'term')` |
+| `fulltextcontainsall(field,'a','b')` | `FullTextContainsAll(c.field,'a','b')` |
+| `fulltextcontainsany(field,'a','b')` | `FullTextContainsAny(c.field,'a','b')` |
+| `fulltextscore(field,'term')` | `FullTextScore(c.field,'term')` |
+| `rrf(score1,score2)` | `RRF(score1,score2)` (hybrid ranking) |
 
 ## Project structure
 
