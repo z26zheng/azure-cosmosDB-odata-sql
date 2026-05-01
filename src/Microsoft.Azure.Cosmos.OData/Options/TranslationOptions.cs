@@ -140,5 +140,18 @@ namespace Microsoft.Azure.Cosmos.OData
         /// <c>0</c> (default) means unlimited.
         /// </summary>
         public int MaxSelectProperties { get; init; } = 0;
+
+        // -------- Query modifiers --------
+
+        /// <summary>
+        /// When <c>true</c>, emits <c>SELECT DISTINCT</c> instead of <c>SELECT</c>.
+        /// </summary>
+        public bool Distinct { get; init; } = false;
+
+        /// <summary>
+        /// When <c>true</c> and exactly one field is selected, emits <c>SELECT VALUE c.field</c>
+        /// instead of <c>SELECT c.field</c>. Produces raw scalar results instead of JSON objects.
+        /// </summary>
+        public bool ValueProjection { get; init; } = false;
     }
 }

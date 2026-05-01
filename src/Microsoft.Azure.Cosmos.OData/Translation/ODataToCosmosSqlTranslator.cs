@@ -258,7 +258,14 @@ namespace Microsoft.Azure.Cosmos.OData
                 projection = fieldPaths.Count == 0 ? "*" : string.Join(", ", fieldPaths);
             }
 
-            return "SELECT " + topPart + projection + " FROM " + options.FromName;
+            var selectKeyword = "SELECT ";
+            if (options.Distinct) selectKeyword = "SELECT DISTINCT ";
+            if (options.ValueProjection && !projection.Contains(",") && projection != "*")
+            {
+                selectKeyword = options.Distinct ? "SELECT DISTINCT VALUE " : "SELECT VALUE ";
+            }
+
+            return selectKeyword + topPart + projection + " FROM " + options.FromName;
         }
 
         private static string SegmentName(PathSelectItem item)

@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Versioning">
-    <VersionPrefix>4.0.0</VersionPrefix>
+    <VersionPrefix>4.1.0</VersionPrefix>
     <VersionSuffix Condition="'$(VersionSuffix)' == '' and '$(GITHUB_REF_TYPE)' != 'tag'">alpha.1</VersionSuffix>
     <FileVersion>4.0.0.0</FileVersion>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
