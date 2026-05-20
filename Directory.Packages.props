@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Cosmos">
-    <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.59.0" />
+    <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.60.0" />
   </ItemGroup>
 
   <ItemGroup Label="Logging / DI">
