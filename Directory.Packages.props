@@ -29,9 +29,9 @@
   </ItemGroup>
 
   <ItemGroup Label="Logging / DI">
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.10" />
   </ItemGroup>
 
   <ItemGroup Label="Build / SourceLink">
