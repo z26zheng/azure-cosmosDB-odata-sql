@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Build / SourceLink">
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301" />
   </ItemGroup>
 
   <ItemGroup Label="Test packages">
